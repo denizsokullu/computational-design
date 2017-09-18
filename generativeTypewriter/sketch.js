@@ -33,6 +33,7 @@ var Settings = function(){
   this.xSpace = 50;
   this.ySpace = 50;
   this.rotate = 0.2;
+  this.frameRate = frameRate();
 }
 function setup(){
   canvas = createCanvas(window.innerWidth, window.innerHeight);
@@ -46,11 +47,13 @@ function setup(){
   gui.add(settings, "xStart",0,window.innerWidth);
   gui.add(settings, "yStart",0,window.innerHeight);
   gui.add(settings, "rotate",0,360);
+  gui.add(settings, "frameRate",0,60).listen();
 }
 
 function draw(){
   background(51);
   fill(255);
+  settings.frameRate = frameRate();
   if (keyIsDown(SHIFT) && !capital){
     capital = true;
   }
