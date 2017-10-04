@@ -7,9 +7,12 @@ import string
 
 def loadFont():
     path  = sys.argv[1]
-    os.remove(path+"data.js")
+    try:
+        os.remove(path+"data.js")
+    except:
+        print("No initial file found. Creating...")
     resFile = open(path+"data.js","w")
-    resFile.write("font={")
+    resFile.write(path[:-1]+"={")
     seenFirst = False
     for char in string.lowercase:
         curFile = path+char+".jpg"
