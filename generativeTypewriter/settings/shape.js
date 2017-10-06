@@ -1,60 +1,84 @@
 SETTINGS.shapeFunctions = {
   drawRectangle: function(target){
     t = target;
-    rect((t.x*t.offSetX)+t.xStart,
-         (t.y*t.offSetY)+t.yStart,
-          t.xs,
-          t.ys);
+    push();
+    stroke(color(settings.strokeColor[0],
+                 settings.strokeColor[1],
+                 settings.strokeColor[2]));
+    if(!settings.stroke){
+      noStroke();
+    }
+    strokeWeight(settings.strokeWeight);
+    translate(t.xStart,t.yStart);
+    rect(t.x,t.y,t.xs,t.ys);
+    pop();
   },
   drawEllipse: function(target){
     t = target;
-    ellipse((t.x*t.offSetX)+t.xStart,
-            (t.y*t.offSetY)+t.yStart,
-             t.xs,
-             t.ys);
+    push();
+    stroke(color(settings.strokeColor[0],
+                 settings.strokeColor[1],
+                 settings.strokeColor[2]));
+    if(!settings.stroke){
+      noStroke();
+    }
+    translate(t.xStart,t.yStart);
+    ellipse(t.x,t.y,t.xs,t.ys);
+    pop();
   },
   drawLine: function(target){
     t = target;
     push();
-    stroke(color(settings.color[0],settings.color[1],
-    settings.color[2]));
-    translate((t.x*t.offSetX)+t.xStart,(t.y*t.offSetY)+t.yStart);
-    settingData = SETTINGS.shapeStorage.drawLine
-    if (settingData.lineHoverFollow){
-      mousePos = createVector(mouseX-((t.x*t.offSetX)+t.xStart),mouseY-(t.y*t.offSetY)+t.yStart);
-      baseVector = createVector(1,0);
-      if(mouseY <= (t.y*t.offSetY)+t.yStart){
-        settings.rotate = - baseVector.angleBetween(mousePos)
+    stroke(color(settings.strokeColor[0],
+                 settings.strokeColor[1],
+                 settings.strokeColor[2]));
+    translate(t.x+t.xStart,t.y+t.yStart);
+    data = target.data.drawLine
+    settingData = SETTINGS.shapeStorage.drawLine;
+    var angle;
+    if (settingData.lineMagnet){
+      distance = dist((t.x)+t.xStart,(t.y)+t.yStart,mouseX,mouseY);
+      angle = settings.rotate;
+
+      if (distance < settingData.maxDistance){
+          data.shapeXSize = settingData.maxDistance - distance;
+          data.shapeYSize = settingData.maxDistance - distance;
       }
       else{
-        settings.rotate = baseVector.angleBetween(mousePos) - 360
+        data.shapeXSize = settingData.oldX
+        data.shapeYSize = settingData.oldY
       }
     }
-    if (settingData.lineMagnet){
-      distance = dist((t.x*t.offSetX)+t.xStart,(t.y*t.offSetY)+t.yStart,mouseX,mouseY);
-      if (distance < 100){
-        settings.shapeXSize = 100 - distance;
-        settings.shapeYSize = 100 - distance;
-      }
-      else{
-        //this updates it for all the following subLetters
-        //fix it
-        settings.shapeXSize = settingData.oldX
-        settings.shapeYSize = settingData.oldY
+    if (settingData.randomDirection){
+      data.shapeXSize *= (Math.random()*2)-1;
+      data.shapeYSize *= (Math.random()*2)-1;
+    }
+    if (settingData.randomSize){
+      r = Math.random();
+      data.shapeXSize += (r*settingData.randomSizeDelta)- (settingData.randomSizeDelta/2);
+      data.shapeYSize += (r*settingData.randomSizeDelta) - (settingData.randomSizeDelta/2);
+    }
+    if (settingData.lineHoverFollow){
+      mousePos = createVector(mouseX-(t.x+t.xStart),mouseY-(t.y+t.yStart)).normalize();
+      baseVector = createVector(t.x+t.xStart+1,t.y+t.yStart).normalize();
+      angle = baseVector.angleBetween(mousePos);
+      if(mouseY <= t.y+t.yStart){
+        angle = -angle;
       }
     }
     strokeWeight(settings.strokeWeight);
-    rotate(settings.rotate);
-    line(0,0,t.xs,t.ys);
+    rotate(angle);
+    line(0,0,data.shapeXSize,data.shapeYSize);
     pop();
   },
   drawLineSpikes: function(target){
     t = target;
     push();
-    stroke(color(settings.color[0],
-                 settings.color[1],
-                 settings.color[2]));
-    translate((t.x*t.offSetX)+t.xStart,(t.y*t.offSetY)+t.yStart);
+    stroke(color(settings.strokeColor[0],
+                 settings.strokeColor[1],
+                 settings.strokeColor[2]));
+    strokeWeight(settings.strokeWeight);
+    translate(t.x+t.xStart,t.y+t.yStart);
     data = t.data.drawLineSpikes;
     settingData = SETTINGS.shapeStorage.drawLineSpikes
     if (settingData.mouseActionLengthIncrease){
@@ -68,24 +92,22 @@ SETTINGS.shapeFunctions = {
     }
     next = createVector(data.nextX,data.nextY);
     cur = createVector(data.curX,data.curY);
-    data.counter = (data.counter +1) % 60;
-    vector2Draw = cur.lerp(next,0.04);
+    data.counter = (data.counter +1) % Math.floor(240 / settingData.spikeSpeed);
+
+    vector2Draw = cur.lerp(next,0.01*settingData.spikeSpeed);
     data.curX = vector2Draw.x;
     data.curY = vector2Draw.y;
 
-    strokeWeight(settings.strokeWeight);
     line(0,0,vector2Draw.x,vector2Draw.y);
-    rotate(settings.rotate);
-    line(0,0,);
     pop();
   },
   drawCurvedLines: function(target){
     t = target;
     push();
-    stroke(color(settings.color[0],
-                 settings.color[1],
-                 settings.color[2]));
-    translate((t.x*t.offSetX)+t.xStart,(t.y*t.offSetY)+t.yStart);
+    stroke(color(settings.strokeColor[0],
+                 settings.strokeColor[1],
+                 settings.strokeColor[2]));
+    translate(t.x+t.xStart,t.y+t.yStart);
     data = t.data.drawCurvedLines;
     settingData = SETTINGS.shapeStorage.drawCurvedLines;
 
@@ -123,15 +145,13 @@ SETTINGS.shapeFunctions = {
     strokeWeight(settings.strokeWeight);
     // DRAW HERE
     bezier(data.pos1.x,data.pos1.y,data.curB1x,data.curB1y,data.curB2x,data.curB2y,data.pos2.x,data.pos2.y);
-    // ROTATE HERE if needed
-    rotate(settings.rotate);
     pop();
   }
 }
 SETTINGS.shapeStorage = {
   drawRectangle : {
     createGUI : function(){
-      clearAll();
+      clearAll("shape");
     }
   },
   drawEllipse : {
@@ -143,16 +163,25 @@ SETTINGS.shapeStorage = {
     lineHoverFollow : false,
     lineMagnet : true,
     strokeWeight : 1,
+    maxDistance : 100,
+    randomDirection : false,
+    randomSize : false,
+    randomSizeDelta : 0,
     oldX : SETTINGS.shapeXSize,
     oldY : SETTINGS.shapeYSize,
     createGUI : function(){
-      clearAll();
+      clearAll("shape");
       lineFolder = gui.addFolder("Line");
+      data = settings.shapeStorage.drawLine;
       lineFolderRotate = lineFolder.add(settings,"rotate",-360,360).listen();
-      data = settings.shapeStorage.drawLine
-      lineFolder.add(data,"strokeWeight",0,50).listen();
+      lineFolderRotate = lineFolder.add(data,"maxDistance",0,Math.min(window.innerHeight,window.innerWidth));
+      lineFolder.add(data,"randomDirection");
+      lineFolder.add(data,"randomSize");
+      lineFolder.add(data,"randomSizeDelta",0,200);
       lineFolder.add(data,"lineHoverFollow");
       lineFolder.add(data,"lineMagnet");
+      // gui.remove(shapeXSize);
+      // gui.remove(shapeYSize);
       lineFolder.open();
     }
   },
@@ -160,16 +189,19 @@ SETTINGS.shapeStorage = {
     length : 10,
     lengthMin : 0,
     lengthMax : 100,
+    spikeSpeed : 4,
     mouseActionLengthIncrease : true,
     mouseActionMagnet : true,
     createGUI : function(){
-      clearAll();
+      clearAll("shape");
       spikeLineFolder = gui.addFolder("Spike Line");
       data = settings.shapeStorage.drawLineSpikes
+
+      spikeLineFolder.add(data,"spikeSpeed",1,10).step(1);
       spikeLineFolder.add(data,"length",data.lengthMin,data.lengthMax).listen();
       spikeLineFolder.add(data,"mouseActionLengthIncrease");
-      gui.remove(shapeXSize);
-      gui.remove(shapeYSize);
+      // gui.remove(shapeXSize);
+      // gui.remove(shapeYSize);
       spikeLineFolder.open();
     }
   },
@@ -179,13 +211,14 @@ SETTINGS.shapeStorage = {
     curveMin : 0,
     curveMax : 400,
     createGUI : function(){
-      clearAll();
+      clearAll("shape");
       curvedLineFolder = gui.addFolder("Curved Line");
       data = settings.shapeStorage.drawCurvedLines
       curvedLineFolder.add(data,"curveMagnitude",data.curveMin,data.curveMax).listen();
       curvedLineFolder.add(data,"lengthMagnitude",data.lengthMin,data.lengthMax).listen();
-      gui.remove(shapeXSize);
-      gui.remove(shapeYSize);
+      // gui.remove(shapeListener);
+      // gui.remove(shapeXSize);
+      // gui.remove(shapeYSize);
       curvedLineFolder.open();
     },
     curveMagnitude : 30,

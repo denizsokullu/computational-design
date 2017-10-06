@@ -1,9 +1,7 @@
 var currentLetter;
 p5.disableFriendlyErrors = true;
-var IMAGE_WIDTH = 50;
-var IMAGE_HEIGHT = 150;
-var currentWord = [];
-var currentWordLiteral = [];
+SETTINGS.currentWord = [];
+SETTINGS.currentWordLiteral = [];
 var maxLength = 8;
 var offsetPos;
 var offsetStart;
@@ -12,14 +10,34 @@ var gui;
 var lineFolder;
 var spikeLineFolder;
 var curvedLineFolder;
+var bubbleHoverFolder;
+var bounceHoverFolder;
+var testFont;
 
+function preload(){
+  Object.keys(SETTINGS.fontPaths).forEach((cur)=>{
+    SETTINGS.fontsLoaded[cur] = loadFont(`fonts/${SETTINGS.fontPaths[cur]}`);
+  })
+}
+function saveData(){
+  data = Object.assign({},initSETTINGS,
+                          SETTINGS.shapeStorage,
+                          SETTINGS.hoverStorage);
+  data.currentWord = SETTINGS.currentWord;
+  data.currentWordLiteral = SETTINGS.currentWordLiteral;
+  saveJSON(data,"data.json");
+}
 function setup(){
+
+
   canvas = createCanvas(window.innerWidth, window.innerHeight,P2D);
   angleMode(DEGREES);
+
   SETTINGS.frameRate = frameRate();
   settings = SETTINGS;
+  settings.currentFont = SETTINGS.fontsLoaded["Roboto Mono Regular"];
   settings.clearWord = function(){
-    currentWord = [];
+    SETTINGS.currentWord = [];
     offsetPos = offsetStart;
     return;
   }
@@ -54,10 +72,10 @@ function draw(){
   else if (settings.stroke == false){
     noStroke();
   }
-  currentWord.map((cur)=>{
+  SETTINGS.currentWord.map((cur)=>{
     cur.draw();
   });
-  currentWord.map((cur)=>{
+  SETTINGS.currentWord.map((cur)=>{
     cur.update();
   });
   // Listener code
@@ -65,71 +83,69 @@ function draw(){
     settings.shapeXSize = v;
     settings.shapeYSize = v;
   });
-  hoverFunctionListener.onChange((v)=>{
-    s = settings;
-    if(v == "Bubble"){
-      s.hoverFunctionRep = s.hoverFunctions.bubble;
-    }
-    else if(v == "Shiver"){
-      s.hoverFunctionRep = s.hoverFunctions.shiver;
-    }
-  })
   shapeFunctionListener.onChange((v)=>{
-      settings.shapeStorage[v].createGUI();
-      settings.shapeRep = settings.shapeFunctions[v];
-    });
+    settings.shapeStorage[v].createGUI();
+    settings.shapeRep = settings.shapeFunctions[v];
+  });
+  hoverFunctionListener.onChange((v)=>{
+    settings.hoverStorage[v].createGUI();
+    settings.hoverRep = settings.hoverFunctions[v];
+  });
   fontChangeListener.onChange((v)=>{
-    // change all the letters to whatever
-    updateFont();
-    currentWord = [];
-    offsetPos = offsetStart;
-    currentWordLiteral.map((character)=>{
-      currentWord.push(new ShellLetter(font[character].slice(0)));
-      offsetPos += charWidth*0.45;
-      currentWord.map((cur)=>{
-        cur.children.map((curChild)=>{
-          curChild.updateXOffset(charWidth*.375);
-        });
-      });
-    })
-  })
+    updateFont(v);
+    updateWord();
+  });
+  fontSizeListener.onChange(updateWord);
+  sampleFactorListener.onChange(updateWord);
 }
 
 //GUI FUNCTIONS
 function createGUI(){
   gui = new dat.GUI();
-  fontChangeListener = gui.add(settings, "font",["Menlo","Akkurat Mono","VT323","Roboto Mono"]).listen();
+  fontChangeListener = gui.add(settings, "font",Object.keys(settings.fontsLoaded)).listen();
   shapeFunctionListener = gui.add(settings, "shape",settings.shapeOptions);
-  hoverFunctionListener = gui.add(settings, "hoverFunction",settings.hoverFunctionsString);
+  hoverFunctionListener = gui.add(settings, "hoverFunction",Object.keys(settings.hoverFunctions));
+  sampleFactorListener = gui.add(settings, "sampleFactor",0,1).step(.01);
+  fontSizeListener = gui.add(settings, "fontSize",12,500).step(1);
   gui.addColor(settings,"color").listen();
+  gui.addColor(settings,"strokeColor").listen();
   gui.addColor(settings,"backgroundColor").listen();
   gui.add(settings, "stroke");
-  gui.add(settings, "sampling",1,8).step(1).listen();
   shapeListener = gui.add(settings, "shapeSize",0,200).listen();
   shapeXSize = gui.add(settings, "shapeXSize",0,200).listen();
   shapeYSize = gui.add(settings, "shapeYSize",0,200).listen();
+  gui.add(settings,"strokeWeight",0,500);
   gui.add(settings, "yStart",0,window.innerHeight);
   gui.add(settings, "frameRate",0,60).listen();
   gui.add(settings, "clearWord");
 }
 
-function clearAll(){
-  if (lineFolder != undefined){
+function clearAll(target){
+  if (lineFolder != undefined && target == "shape"){
     lineFolder.close();
     removeFolder(lineFolder,"Line")
     lineFolder = undefined;
   }
-  if (spikeLineFolder != undefined){
+  if (spikeLineFolder != undefined && target == "shape"){
     spikeLineFolder.close();
     removeFolder(spikeLineFolder,"Spike Line");
     spikeLineFolder = undefined;
   }
-  if (curvedLineFolder != undefined){
+  if (curvedLineFolder != undefined && target == "shape"){
     curvedLineFolder.close();
     removeFolder(curvedLineFolder,"Curved Line");
     curvedLineFolder = undefined;
   }
-  resetGUI();
+  if (bubbleHoverFolder != undefined && target == "hover"){
+    bubbleHoverFolder.close();
+    removeFolder(bubbleHoverFolder,"Bubble Behaviour");
+    bubbleHoverFolder = undefined;
+  }
+  if (bounceHoverFolder != undefined && target == "hover"){
+    bounceHoverFolder.close();
+    removeFolder(bounceHoverFolder,"Bounce Behaviour");
+    bounceHoverFolder = undefined;
+  }
 }
 
 function removeFolder(folder,name) {
@@ -147,50 +163,64 @@ function resetGUI(){
   createGUI();
 }
 
-function addCharacter(character,type){
-  ///FINISH THIS
+function updateFont(newFont){
+  settings.currentFont = settings.fontsLoaded[newFont];
 }
-
-function updateFont(){
-  if (settings.font == "Menlo"){
-    font = menlo;
-  }
-  else if (settings.font == "Akkurat Mono"){
-    font = akkuratMono;
-  }
-  else if (settings.font == "VT323"){
-    font = VT323;
-  }
-  else if (settings.font == "Roboto Mono"){
-    font = robotoMono;
-  }
+function updateWord(){
+  SETTINGS.currentWord = [];
+  offsetPos = offsetStart;
+  SETTINGS.currentWordLiteral.map((character)=>{
+    letter = createLetter(character);
+    SETTINGS.currentWord.push(new RegularLetter(letter));
+    offsetPos += charWidth*0.45;
+    SETTINGS.currentWord.map((cur)=>{
+      cur.children.map((curChild)=>{
+        curChild.updateXOffset(charWidth*.375);
+      });
+    });
+  })
+}
+function createLetter(character){
+  return settings.currentFont.textToPoints(
+    character,
+    0,
+    settings.yStart,
+    settings.fontSize,
+    {"sampleFactor":settings.sampleFactor,
+     "simplifyThreshold":settings.simplifyThreshold}
+   )
 }
 function keyPressed(){
-  chare = String.fromCharCode(keyCode).toLowerCase();
-  updateFont();
-  if(keyCode == BACKSPACE && currentWord.length > 0){
-    currentWord.pop();
-    currentWordLiteral.pop();
+  fill(255);
+  character = String.fromCharCode(keyCode).toLowerCase();
+
+  if(keyCode == BACKSPACE ){
+    if(SETTINGS.currentWord.length > 0){
+    SETTINGS.currentWord.pop();
+    SETTINGS.currentWordLiteral.pop();
     offsetPos += -(charWidth*0.45);
-    currentWord.map((cur)=>{
+    SETTINGS.currentWord.map((cur)=>{
       cur.children.map((curChild)=>{
         curChild.updateXOffset(-charWidth*.375);
       });
     });
+    return;
+    }
+    else{
+      return;
+    }
+  }
 
-  }
-  if((Object.keys(font).indexOf(chare) !== -1) &&
-      currentWord.length <= maxLength){
-      settings.sampling = 1
-      character = String.fromCharCode(keyCode).toLowerCase()
-      data = font[character].slice(0)
-      currentWord.push(new ShellLetter(data));
-      currentWordLiteral.push(character);
-      offsetPos += charWidth*0.45;
-      currentWord.map((cur)=>{
-        cur.children.map((curChild)=>{
-          curChild.updateXOffset(charWidth*.375);
+  else if (SETTINGS.currentWord.length <= maxLength){
+      letter = createLetter(character);
+        SETTINGS.currentWord.push(new RegularLetter(letter));
+
+        SETTINGS.currentWordLiteral.push(character);
+        offsetPos += charWidth*0.45;
+        SETTINGS.currentWord.map((cur)=>{
+          cur.children.map((curChild)=>{
+            curChild.updateXOffset(charWidth*.375);
+          });
         });
-      });
-  }
+    }
 }

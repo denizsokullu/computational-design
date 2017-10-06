@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.14/p5.js"></script>
+    <script type="text/javascript" src="p5.dom.js"></script>
     <script type="text/javascript" src="datgui.min.js"></script>
     <script src="menlo/data.js"></script>
     <script src="akkuratMono/data.js"></script>
@@ -11,7 +12,6 @@
     <!--Setting scripts-->
     <script src="settings/main.js"></script>
     <script src="settings/shape.js"></script>
-    <script src="settings/movement.js"></script>
     <script src="settings/hover.js"></script>
     <!---->
     <!--LetterForm scripts-->
@@ -21,6 +21,19 @@
     <!---->
     <script src="sketch.js"></script>
     <title>Generative Typewriter</title>
+    <style media="screen">
+      .dg.main{
+        width:360px!important;
+        padding-right:15px!important;
+        margin-right:0px!important;
+        background-color: #1a1a1a;
+
+      }
+      .close-button{
+        position:relative!important;
+        width:100%!important;
+      }
+    </style>
     <style media="screen">
       body{
         margin:0;

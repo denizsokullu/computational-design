@@ -1,17 +1,108 @@
 //Hover Functions
 SETTINGS.hoverFunctions = {
+  none : function(target){},
   bubble: function(target){
-    target.xs = 30;
-    target.ys = 30;
-    dY = Math.round((Math.random()*4) - 2);
-    dX = Math.round((Math.random()*4) - 2);
-    target.y += dY
-    target.x += dX
+    t = target;
+    data = SETTINGS.hoverStorage.bubble;
+    ratio = data.ratio;
+    maxDist = data.maxDistance;
+    distance = dist(t.x+t.xStart,t.y+t.yStart,mouseX,mouseY);
+    if (distance < maxDist){
+      t.xs = distance/ratio;
+      t.ys = distance/ratio;
+    }
   },
-  shiver: function(target){
-    target.x = lerp(target.x,target.x+target.randomX,0.1);
+  bounce : function(target){
+    t = target;
+    data = t.data.hoverBounce;
+    settingData = SETTINGS.hoverStorage.bounce
+    settingData.update(t);
+    t.x = data.position.x;
+    t.y = data.position.y;
   }
 }
-SETTINGS.hoverFunctionsString = Object.keys(SETTINGS.hoverFunctions);
-SETTINGS.hoverFunctionRep = SETTINGS.hoverFunctions.bubble;
-SETTINGS.hoverFunction = SETTINGS.hoverFunctionsString[0];
+SETTINGS.hoverFunction = "none"
+SETTINGS.hoverRep = SETTINGS.hoverFunctions.none
+SETTINGS.hoverStorage = {
+  bubble: {
+    ratio : 4,
+    maxDistance : 80,
+    createGUI(){
+      clearAll("hover");
+      bubbleHoverFolder = gui.addFolder("Bubble Behaviour");
+      data = settings.hoverStorage.bubble
+      bubbleHoverFolder.add(data,"ratio",1,20);
+      bubbleHoverFolder.add(data,"maxDistance",1,400);
+      bubbleHoverFolder.open();
+    }
+  },
+  none : {
+    createGUI(){
+      clearAll("hover");
+    }
+  },
+  bounce : {
+    maxSpeed : 10,
+    maxForce : 1,
+    createGUI : function(){
+      clearAll("hover");
+      bounceHoverFolder = gui.addFolder("Bounce Behaviour");
+      data = settings.hoverStorage.bounce
+      bounceHoverFolder.add(data,"maxSpeed",0,20);
+      bounceHoverFolder.add(data,"maxForce",0,2).step(0.01);
+      bounceHoverFolder.open();
+    },
+    behaviours : function(t){
+      var arrive = this.arrive(t,t.data.hoverBounce.target);
+      var mouse = createVector(mouseX-t.xStart,mouseY-t.yStart);
+      var flee = this.flee(t,mouse);
+
+      arrive.mult(1);
+      flee.mult(20);
+
+      this.applyForce(t,arrive);
+      this.applyForce(t,flee);
+    },
+    applyForce : function(t,f){
+      t.data.hoverBounce.acceleration.add(f);
+    },
+    update : function(t){
+      this.behaviours(t);
+      t.data.hoverBounce.position.add(t.data.hoverBounce.velocity);
+      t.data.hoverBounce.velocity.add(t.data.hoverBounce.acceleration);
+      t.data.hoverBounce.acceleration.mult(0);
+    },
+    flee : function(t,target){
+      var desired = p5.Vector.sub(target,t.data.hoverBounce.position);
+      var d = desired.mag();
+      if (d < 100){
+        desired.setMag(this.maxSpeed);
+        desired.mult(-1);
+        var steer = p5.Vector.sub(desired,t.data.hoverBounce.velocity);
+        steer.limit(this.maxForce);
+        return steer;
+      }else{
+        return createVector(0,0);
+      }
+    },
+    arrive : function(t,target){
+      var desired = p5.Vector.sub(target,t.data.hoverBounce.position);
+      var d = desired.mag();
+      var speed = this.maxSpeed;
+      if( d < 100){
+        var speed = map(d,0,100,0,this.maxSpeed);
+      }
+      desired.setMag(speed);
+      var steer = p5.Vector.sub(desired,t.data.hoverBounce.velocity);
+      steer.limit(this.maxForce);
+      return steer;
+    },
+    seek : function(t,target){
+      var desired = p5.Vector.sub(target,t.data.hoverBounce.position);
+      desired.setMag(this.maxSpeed);
+      var steer = p5.Vector.sub(desired,t.data.hoverBounce.velocity);
+      ster.limit(this.maxForce);
+      return steer;
+    }
+  }
+}

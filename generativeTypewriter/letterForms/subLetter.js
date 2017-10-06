@@ -1,16 +1,11 @@
-var SubLetter = function(x,y,offsetX,offsetY){
+var SubLetter = function(x,y,angle,offsetX,offsetY){
   this.offSetX = settings.xSpace
   this.offSetY = settings.ySpace
   this.xStart = settings.xStart + offsetPos;
   this.yStart = settings.yStart;
-  dividerX = 0
-  dividerY = 0
-  if (settings.sampling != 1){
-    dividerX = 1*x/settings.sampling
-    dividerY = 1*y/settings.sampling
-  }
-  this.x = x - dividerX;
-  this.y = y - dividerY;
+  this.angle = angle;
+  this.x = x;
+  this.y = y;
   this.sSize = settings.shapeSize;
   this.xs = settings.shapeXSize
   this.ys = settings.shapeYSize;
@@ -19,20 +14,10 @@ var SubLetter = function(x,y,offsetX,offsetY){
     return (!(this.x % settings.sampling)) && (!(this.y % settings.sampling))
   }
   this.draw = function(){
-      this.x = x - dividerX;
-      this.y = y - dividerY;
-      if(this.checkSampling()){
-        fill(color(settings.color[0],settings.color[1],settings.color[2]))
-        settings.shapeRep(this);
-      }
+      settings.hoverRep(this);
+      fill(color(settings.color[0],settings.color[1],settings.color[2]))
+      settings.shapeRep(this);
     }
-  this.checkHover = function(){
-    offset = 30
-    return(mouseX > (this.x*this.offSetX) + this.xStart - offset &&
-           mouseX < (this.x*this.offSetX) + this.xStart + this.sSize + offset&&
-           mouseY > (this.y*this.offSetY) + this.yStart - offset &&
-           mouseY < (this.y*this.offSetY) + this.yStart + this.sSize + offset)
-  }
   this.updateXOffset = function(val){
     this.xStart -= val;
   }
@@ -50,6 +35,11 @@ var SubLetter = function(x,y,offsetX,offsetY){
   }
   this.counter = 0;
   this.data = {
+    drawLine: {
+      counter : 0,
+      shapeXSize : SETTINGS.shapeXSize,
+      shapeYSize : SETTINGS.shapeYSize
+    },
     drawLineSpikes: {
       counter : 0,
       x : Math.floor((Math.random()*SETTINGS.shapeStorage.drawLineSpikes.length)
@@ -75,6 +65,12 @@ var SubLetter = function(x,y,offsetX,offsetY){
       pos2: p5.Vector.random2D().mult(Math.random()*SETTINGS.shapeStorage.drawCurvedLines.lengthMagnitude - (SETTINGS.shapeStorage.drawCurvedLines.lengthMagnitude)),
       newPos1: p5.Vector.random2D().mult(Math.random()*SETTINGS.shapeStorage.drawCurvedLines.lengthMagnitude - (SETTINGS.shapeStorage.drawCurvedLines.lengthMagnitude)),
       newPos2: p5.Vector.random2D().mult(Math.random()*SETTINGS.shapeStorage.drawCurvedLines.lengthMagnitude - (SETTINGS.shapeStorage.drawCurvedLines.lengthMagnitude)),
+    },
+    hoverBounce : {
+      position : createVector(this.x,this.y),
+      target : createVector(this.x,this.y),
+      acceleration : createVector(),
+      velocity : p5.Vector.random2D()
     }
   }
 }
