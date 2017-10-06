@@ -180,8 +180,6 @@ SETTINGS.shapeStorage = {
       lineFolder.add(data,"randomSizeDelta",0,200);
       lineFolder.add(data,"lineHoverFollow");
       lineFolder.add(data,"lineMagnet");
-      // gui.remove(shapeXSize);
-      // gui.remove(shapeYSize);
       lineFolder.open();
     }
   },

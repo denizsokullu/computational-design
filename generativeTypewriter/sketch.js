@@ -20,13 +20,15 @@ function preload(){
   })
 }
 function saveData(){
-  data = Object.assign({},initSETTINGS,
-                          SETTINGS.shapeStorage,
-                          SETTINGS.hoverStorage);
-  data.currentWord = SETTINGS.currentWord;
+  data = Object.assign({},
+                       SETTINGS.hoverStorage,
+                       SETTINGS.shapeStorage);
+  // data.currentWord = SETTINGS.currentWord;
   data.currentWordLiteral = SETTINGS.currentWordLiteral;
-  saveJSON(data,"data.json");
+  randomID = (Math.floor(Math.random()*100000))
+  saveJSON(data,"data"+parseInt(randomID)+".json");
 }
+
 function setup(){
 
 
@@ -43,8 +45,8 @@ function setup(){
   }
 
   //Set letter spacing
-  charWidth = 25*(settings.shapeXSize+settings.xSpace);
-  offsetStart = (window.innerWidth/2) - (charWidth/2);
+  charWidth = 42*(settings.shapeXSize+settings.xSpace);
+  offsetStart = (window.innerWidth/2) - (charWidth/2)+80;
   offsetPos = offsetStart;
 
   //Create GUI
@@ -172,10 +174,10 @@ function updateWord(){
   SETTINGS.currentWordLiteral.map((character)=>{
     letter = createLetter(character);
     SETTINGS.currentWord.push(new RegularLetter(letter));
-    offsetPos += charWidth*0.45;
+    offsetPos += charWidth*0.24;
     SETTINGS.currentWord.map((cur)=>{
       cur.children.map((curChild)=>{
-        curChild.updateXOffset(charWidth*.375);
+        curChild.updateXOffset(charWidth*.16);
       });
     });
   })
@@ -198,10 +200,10 @@ function keyPressed(){
     if(SETTINGS.currentWord.length > 0){
     SETTINGS.currentWord.pop();
     SETTINGS.currentWordLiteral.pop();
-    offsetPos += -(charWidth*0.45);
+    offsetPos += -(charWidth*0.24);
     SETTINGS.currentWord.map((cur)=>{
       cur.children.map((curChild)=>{
-        curChild.updateXOffset(-charWidth*.375);
+        curChild.updateXOffset(-charWidth*.18);
       });
     });
     return;
@@ -214,12 +216,11 @@ function keyPressed(){
   else if (SETTINGS.currentWord.length <= maxLength){
       letter = createLetter(character);
         SETTINGS.currentWord.push(new RegularLetter(letter));
-
         SETTINGS.currentWordLiteral.push(character);
-        offsetPos += charWidth*0.45;
+        offsetPos += charWidth*0.24;
         SETTINGS.currentWord.map((cur)=>{
           cur.children.map((curChild)=>{
-            curChild.updateXOffset(charWidth*.375);
+            curChild.updateXOffset(charWidth*.18);
           });
         });
     }

@@ -1,4 +1,4 @@
-var SETTINGS = {
+var initSettings = {
   sampling : 1,
   font : "Roboto Mono Regular",
   fontPaths: {"Brandon Grotesque Regular":"BrandonGrotesque-Regular.ttf",
@@ -41,3 +41,4 @@ var SETTINGS = {
   ySpace : 5,
   rotate : 0,
 }
+var SETTINGS = initSettings;
