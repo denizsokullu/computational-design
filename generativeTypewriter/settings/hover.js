@@ -44,12 +44,14 @@ SETTINGS.hoverStorage = {
   bounce : {
     maxSpeed : 10,
     maxForce : 1,
+    distance : 100,
     createGUI : function(){
       clearAll("hover");
       bounceHoverFolder = gui.addFolder("Bounce Behaviour");
-      data = settings.hoverStorage.bounce
-      bounceHoverFolder.add(data,"maxSpeed",0,20);
-      bounceHoverFolder.add(data,"maxForce",0,2).step(0.01);
+      data = settings.hoverStorage.bounce;
+      bounceHoverFolder.add(data,"distance",0,500).step(1);
+      bounceHoverFolder.add(data,"maxSpeed",0,20).step(0.01);
+      bounceHoverFolder.add(data,"maxForce",0,2).step(0.001);
       bounceHoverFolder.open();
     },
     behaviours : function(t){
@@ -75,7 +77,7 @@ SETTINGS.hoverStorage = {
     flee : function(t,target){
       var desired = p5.Vector.sub(target,t.data.hoverBounce.position);
       var d = desired.mag();
-      if (d < 100){
+      if (d < this.distance){
         desired.setMag(this.maxSpeed);
         desired.mult(-1);
         var steer = p5.Vector.sub(desired,t.data.hoverBounce.velocity);
@@ -89,8 +91,9 @@ SETTINGS.hoverStorage = {
       var desired = p5.Vector.sub(target,t.data.hoverBounce.position);
       var d = desired.mag();
       var speed = this.maxSpeed;
-      if( d < 100){
-        var speed = map(d,0,100,0,this.maxSpeed);
+      if( d < this.distance){
+        console.log(this.distance)
+        var speed = map(d,0,this.distance,0,this.maxSpeed);
       }
       desired.setMag(speed);
       var steer = p5.Vector.sub(desired,t.data.hoverBounce.velocity);
