@@ -71,6 +71,56 @@ SETTINGS.shapeFunctions = {
     line(0,0,data.shapeXSize,data.shapeYSize);
     pop();
   },
+  drawConnectedVertices : function(target){
+    push();
+    t = target;
+    settingData = settings.shapeStorage.drawConnectedVertices;
+    stroke(color(settings.strokeColor[0],
+                 settings.strokeColor[1],
+                 settings.strokeColor[2]));
+    translate(t.xStart,t.yStart);
+    strokeWeight(settings.strokeWeight);
+    t.closestPoints.map((cur)=>{
+      if (cur.d < settingData.distanceThreshold && cur.d != 0)
+        line(t.x,t.y,cur.x,cur.y);
+    });
+    if (settingData.attractMouse){
+      if (dist(t.x+t.xStart,t.y+t.yStart,mouseX,mouseY) < settingData.attractMouseDistance){
+        extraX = 0;
+        extraY = 0;
+        r = 1;
+        v = settingData.randomnessMagnitude
+        if(settingData.attractMouseRandomness){
+          r = Math.random();
+          cExtraX1 = ((Math.random()*v)-(v/2));
+          cExtraY1 = ((Math.random()*v)-(v/2));
+          cExtraX2 = ((Math.random()*v)-(v/2));
+          cExtraY2 = ((Math.random()*v)-(v/2));
+          extraX = ((Math.random()*v)-(v/2));
+          extraY = ((Math.random()*v)-(v/2));
+        }
+        mX = mouseX-t.xStart+extraX;
+        mY = mouseY-t.yStart+extraY;
+        dx = mX - t.x;
+        dy = mY - t.y;
+        //First Control Point
+        c1x = t.x + ((dx * 0.3 + settingData.curveDist) * r) + cExtraX1;
+        c1y = t.y + ((dy * 0.3 + settingData.curveDist) * r) + cExtraY1;
+        //Second Control Point
+        // c2x = (dx*0.6 + settingData.curveDist) *settingData.curveStrength;
+        c2x = t.x + ((dx * 0.3 - settingData.curveDist) * r) + cExtraX2;
+        c2y = t.y + ((dy * 0.3 - settingData.curveDist) * r) + cExtraY2;
+        if (settingData.attractMouseCurved){
+          noFill();
+          bezier(t.x,t.y,c1x,c1y,c2x,c2y,mX,mY);
+        }
+        else{
+          line(t.x,t.y,mX,mY);
+        }
+      }
+    }
+    pop();
+  },
   drawLineSpikes: function(target){
     t = target;
     push();
@@ -158,6 +208,30 @@ SETTINGS.shapeStorage = {
     createGUI : function(){
       clearAll();
     }
+  },
+  drawConnectedVertices : {
+    createGUI : function(){
+      clearAll("shape");
+      connectedVerticesFolder = gui.addFolder("Connected Vertices");
+      data = settings.shapeStorage.drawConnectedVertices;
+      connectedVerticesFolder.add(data,"distanceThreshold",0,200);
+      connectedVerticesFolder.add(data,"attractMouse");
+      connectedVerticesFolder.add(data,"attractMouseDistance",0,Math.min(window.innerWidth,window.innerHeight));
+      connectedVerticesFolder.add(data,"attractMouseRandomness");
+      connectedVerticesFolder.add(data,"randomnessMagnitude",0,50);
+      connectedVerticesFolder.add(data,"attractMouseCurved");
+      connectedVerticesFolder.add(data,"curveDist",-100,100);
+      connectedVerticesFolder.add(data,"curveStrength",0,100);
+      connectedVerticesFolder.open();
+    },
+    distanceThreshold : 25,
+    attractMouse : true,
+    attractMouseDistance : 50,
+    attractMouseRandomness : true,
+    randomnessMagnitude : 20,
+    attractMouseCurved : true,
+    curveDist : 5,
+    curveStrength : 5
   },
   drawLine : {
     lineHoverFollow : false,

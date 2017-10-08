@@ -1,6 +1,7 @@
-var SubLetter = function(x,y,angle,offsetX,offsetY){
-  this.offSetX = settings.xSpace
-  this.offSetY = settings.ySpace
+var SubLetter = function(x,y,angle,offsetX,offsetY,closestPoints){
+  this.offSetX = settings.xSpace;
+  this.closestPoints = closestPoints;
+  this.offSetY = settings.ySpace;
   this.xStart = settings.xStart + offsetPos;
   this.yStart = settings.yStart;
   this.angle = angle;

@@ -12,6 +12,7 @@ var spikeLineFolder;
 var curvedLineFolder;
 var bubbleHoverFolder;
 var bounceHoverFolder;
+var connectVerticesFolder;
 var testFont;
 
 function preload(){
@@ -133,6 +134,11 @@ function clearAll(target){
     removeFolder(spikeLineFolder,"Spike Line");
     spikeLineFolder = undefined;
   }
+  if (connectVerticesFolder != undefined && target == "shape"){
+    connectVerticesFolder.close();
+    removeFolder(connectVerticesFolder,"Connected Vertices");
+    connectVerticesFolder = undefined;
+  }
   if (curvedLineFolder != undefined && target == "shape"){
     curvedLineFolder.close();
     removeFolder(curvedLineFolder,"Curved Line");
@@ -214,14 +220,14 @@ function keyPressed(){
   }
 
   else if (SETTINGS.currentWord.length <= maxLength){
-      letter = createLetter(character);
-        SETTINGS.currentWord.push(new RegularLetter(letter));
-        SETTINGS.currentWordLiteral.push(character);
-        offsetPos += charWidth*0.24;
-        SETTINGS.currentWord.map((cur)=>{
-          cur.children.map((curChild)=>{
-            curChild.updateXOffset(charWidth*.18);
-          });
-        });
-    }
+    letter = createLetter(character);
+    SETTINGS.currentWord.push(new RegularLetter(letter));
+    SETTINGS.currentWordLiteral.push(character);
+    offsetPos += charWidth*0.24;
+    SETTINGS.currentWord.map((cur)=>{
+      cur.children.map((curChild)=>{
+        curChild.updateXOffset(charWidth*.18);
+      });
+    });
+  }
 }
