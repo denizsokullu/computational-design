@@ -92,7 +92,6 @@ SETTINGS.hoverStorage = {
       var d = desired.mag();
       var speed = this.maxSpeed;
       if( d < this.distance){
-        console.log(this.distance)
         var speed = map(d,0,this.distance,0,this.maxSpeed);
       }
       desired.setMag(speed);
