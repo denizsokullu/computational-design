@@ -1,0 +1,13 @@
+@import 'prereqs.css';
+body{
+  background-color: black;
+  font-family: 'Montserrat', sans-serif;
+  color:white;
+  padding-left:30px;
+  padding-right:30px;
+  margin-top:30px;
+}
+h1{
+  padding:1rem;
+  font-size:2rem;
+}
