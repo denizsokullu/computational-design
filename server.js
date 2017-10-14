@@ -8,6 +8,8 @@ const compiler = webpack(webpackConfig);
 
 app.use(express.static(__dirname + '/www'));
 
+
+
 app.use(webpackDevMiddleware(compiler, {
   hot: true,
   filename: 'bundle.js',
@@ -17,6 +19,10 @@ app.use(webpackDevMiddleware(compiler, {
   },
   historyApiFallback: true,
 }));
+
+app.get('/',function(req,res){
+  res.sendFile('index.html');
+})
 
 const server = app.listen(3000, function() {
   const host = server.address().address;
