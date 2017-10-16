@@ -21,8 +21,8 @@ app.use(webpackDevMiddleware(compiler, {
 app.get('/',function(req,res){
   res.sendFile(__dirname + '/www/index.html');
 })
-app.get('/asd',function(req,res){
-  res.sendFile(__dirname + '/www/index.html');
+app.get('/generativeTypewriter',function(req,res){
+  res.sendFile(path.join(__dirname,'/www/generativeTypewriter/index.html'));
 })
 const PORT = process.env.PORT || 8000;
 
