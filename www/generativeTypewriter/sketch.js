@@ -14,28 +14,21 @@ var bubbleHoverFolder;
 var bounceHoverFolder;
 var connectVerticesFolder;
 var testFont;
+var EXPORTS = {};
+
+//Everything in the settings that we can change
+//Everything in initSettings;
+
 
 function preload(){
   Object.keys(SETTINGS.fontPaths).forEach((cur)=>{
     SETTINGS.fontsLoaded[cur] = loadFont(`fonts/${SETTINGS.fontPaths[cur]}`);
   })
 }
-function saveData(){
-  data = Object.assign({},
-                       SETTINGS.hoverStorage,
-                       SETTINGS.shapeStorage);
-  // data.currentWord = SETTINGS.currentWord;
-  data.currentWordLiteral = SETTINGS.currentWordLiteral;
-  randomID = (Math.floor(Math.random()*100000))
-  saveJSON(data,"data"+parseInt(randomID)+".json");
-}
 
 function setup(){
-
-
   canvas = createCanvas(window.innerWidth, window.innerHeight,P2D);
   angleMode(DEGREES);
-
   SETTINGS.frameRate = frameRate();
   settings = SETTINGS;
   settings.currentFont = SETTINGS.fontsLoaded["Roboto Mono Regular"];
@@ -55,6 +48,36 @@ function setup(){
   background(color(settings.backgroundColor[0],
                    settings.backgroundColor[1],
                    settings.backgroundColor[2]));
+
+  //load data from db
+  var id = window.location.search.split("=")[1];
+  currentData = database.ref('generativeTypewriter/creations/'+id);
+  currentData.on('value',retrieveDrawing);
+}
+
+function retrieveDrawing(data){
+  var obj = data.val();
+  data = obj.EXPORTS;
+  console.log(data);
+  Object.keys(data).map((val)=>{
+    if (typeof(data[val]) != "object" || data[val] instanceof Array){
+      settings[val] = data[val];
+    }
+    else{
+      obj = data[val];
+      Object.keys(obj).map((innerStorage)=>{
+        storage = obj[innerStorage];
+        Object.keys(storage).map((innerVal)=>{
+          settings[val][innerStorage][innerVal] = storage[innerVal];
+        });
+      });
+    }
+  });
+  updateFont(SETTINGS.font);
+  updateWord();
+  settings.shapeRep = SETTINGS.shapeFunctions[data.shape];
+  settings.hoverRep = SETTINGS.hoverFunctions[data.hoverFunction];
+
 }
 
 function draw(){
@@ -106,19 +129,19 @@ function draw(){
 function createGUI(){
   gui = new dat.GUI();
   fontChangeListener = gui.add(settings, "font",Object.keys(settings.fontsLoaded)).listen();
-  shapeFunctionListener = gui.add(settings, "shape",settings.shapeOptions);
-  hoverFunctionListener = gui.add(settings, "hoverFunction",Object.keys(settings.hoverFunctions));
-  sampleFactorListener = gui.add(settings, "sampleFactor",0,1).step(.01);
-  fontSizeListener = gui.add(settings, "fontSize",12,500).step(1);
+  shapeFunctionListener = gui.add(settings, "shape",settings.shapeOptions).listen();
+  hoverFunctionListener = gui.add(settings, "hoverFunction",Object.keys(settings.hoverFunctions)).listen();
+  sampleFactorListener = gui.add(settings, "sampleFactor",0,1).step(.01).listen();
+  fontSizeListener = gui.add(settings, "fontSize",12,500).step(1).listen();
   gui.addColor(settings,"color").listen();
   gui.addColor(settings,"strokeColor").listen();
   gui.addColor(settings,"backgroundColor").listen();
-  gui.add(settings, "stroke");
+  gui.add(settings, "stroke").listen();
   shapeListener = gui.add(settings, "shapeSize",0,200).listen();
   shapeXSize = gui.add(settings, "shapeXSize",0,200).listen();
   shapeYSize = gui.add(settings, "shapeYSize",0,200).listen();
-  gui.add(settings,"strokeWeight",0,500);
-  gui.add(settings, "yStart",0,window.innerHeight);
+  gui.add(settings,"strokeWeight",0,500).listen();
+  gui.add(settings, "yStart",0,window.innerHeight).listen();
   gui.add(settings, "frameRate",0,60).listen();
   gui.add(settings, "clearWord");
 }
