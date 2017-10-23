@@ -8,14 +8,6 @@ import * as Firebase from 'firebase';
 //   {id:"2",className:"projectBundle",title:"Generative Posters",paragraph:"Wrote a script to generate posters using these 5 interesting things that blend in well together and printed them on 24x36"}
 // ]
 
-// document.addEventListener('DOMContentLoaded', function() {
-//   var items = data.map((cur)=>{
-//               return <ProjectBundle key={cur.id} className={cur.className}
-//                              title={cur.title}
-//                              paragraph={cur.paragraph}/>});
-//   ReactDOM.render(items, document.getElementById('mount'));
-// });
-
 var config = {
   apiKey: "AIzaSyBgccrWZFk0uWNiys5_AIsd9msCJIaxSMg",
   authDomain: "computational-design.firebaseapp.com",
@@ -30,19 +22,24 @@ var database = firebase.database();
 var ref = database.ref('generativeTypewriter/creations');
 
 document.addEventListener('DOMContentLoaded',function(){
-  ref.on('value',allData);
+  ref.on('value',createGallery);
 });
 
-function allData(data){
+function createGallery(data){
   var obj = data.val();
   var gallery = Object.keys(obj).map((cur,index)=>{
-  return <GalleryPiece     key={index}
-                           id={obj[cur].id}
-                           image={obj[cur].image}
-                           title={obj[cur].title}
-                           alt={obj[cur].title}
-                           link={obj[cur].id}
-                           jsonFile={obj[cur].id}/>});
+    //make this check stronger so that it actually checks data
+    if (obj[cur].dataWrite){
+      return <GalleryPiece     key={index}
+                               id={obj[cur].id}
+                               image={obj[cur].image}
+                               title={obj[cur].title}
+                               alt={obj[cur].title}
+                               link={obj[cur].id}
+                               jsonFile={obj[cur].id}/>;
+    }
+    return <p key={index}/>
+  });
   ReactDOM.render(gallery,document.getElementById('gallery-container'),addListeners);
 }
 function addListeners(){
@@ -55,5 +52,4 @@ function addListeners(){
       window.location.replace(origin+currentProject+id);
     })
   });
-
 }

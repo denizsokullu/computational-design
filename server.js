@@ -5,6 +5,17 @@ const webpackConfig = require('./webpack.config.js');
 const app = express();
 const url = require('url');
 const firebase = require('firebase');
+var config = {
+  apiKey: "AIzaSyBgccrWZFk0uWNiys5_AIsd9msCJIaxSMg",
+  authDomain: "computational-design.firebaseapp.com",
+  databaseURL: "https://computational-design.firebaseio.com",
+  projectId: "computational-design",
+  storageBucket: "",
+  messagingSenderId: "597250126920"
+};
+
+firebase.initializeApp(config);
+var database = firebase.database();
 
 const compiler = webpack(webpackConfig);
 
@@ -27,12 +38,16 @@ app.get('/generativeTypewriter/new',function(req,res,next){
   //instead of generating smth here on your own,
   //generate an empty submission to
   newCanvasId = Math.random().toString(36).substring(2);
-  res.redirect(url.format({
-    pathname:"/generativeTypewriter/create",
-    query:{
-      id:newCanvasId
-    }
-  }));
+  var ref = database.ref('generativeTypewriter/creations');
+  var newRef = ref.push({dataWrite:false},function(){
+    res.redirect(url.format({
+      pathname:"/generativeTypewriter/create",
+      query:{
+        id:newRef.key
+      }
+    }));
+  });
+
 })
 app.get('/generativeTypewriter/gallery',function(req,res){
   res.sendFile(__dirname + '/www/gallery.html');

@@ -21,5 +21,8 @@ function saveData(){
   src = canvas.toDataURL("image/png");
   data.image = src;
   data.title = "Test Title"
-  ref.push(data);
+  tempObject = {};
+  data.dataWrite = true;
+  tempObject[data.id] = data;
+  ref.update(tempObject);
 }

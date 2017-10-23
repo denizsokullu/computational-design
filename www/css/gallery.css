@@ -18,11 +18,17 @@
   cursor:pointer;
 }
 
-.galleryPiece img{
-  max-width:calc(400px - 24px);
-}
+
 .galleryPiece > *{
   padding:12px;
+}
+.galleryPiece img{
+  max-width:400px;
+  padding:0;
+  display:block;
+  margin:auto;
+  border-top-left-radius: 2px;
+  border-top-right-radius: 2px;
 }
 .button-container{
   display:none;
