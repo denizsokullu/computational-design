@@ -1,0 +1,30 @@
+.project{
+  display:block;
+  margin-top:25px;
+  padding:2rem;
+  text-decoration: none;
+  color:black;
+  width:500px;
+  border:2px solid transparent;
+  border-radius:4px;
+  transition: border .1s ease-in-out;
+}
+.project:visited{
+  text-decoration: none;
+  color:black;
+}
+.project:hover{
+  border-color:black;
+    transition: border .1s ease-in-out;
+}
+.project:active{
+  text-decoration: none;
+  color:black;
+}
+.project h2{
+  margin-bottom:20px;
+  font-size:1.5rem;
+}
+#particles-js{
+  z-index: -1;
+}

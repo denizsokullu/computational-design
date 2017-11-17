@@ -6,7 +6,7 @@
 // Constructor function
 function Rocket(dna,target) {
   // Physics of rocket at current instance
-  this.pos = createVector(width/2, height/2);
+  this.pos = createVector(width/4, height/2);
   this.vel = createVector();
   this.acc = createVector();
   this.s1 = target.s1;
@@ -61,13 +61,13 @@ function Rocket(dna,target) {
     // Checks distance from rocket to target
     var d = dist(this.pos.x, this.pos.y, this.target.pos.x, this.target.pos.y);
     // If distance less than 10 pixels, then it has reached target
-    if (d < 4) {
+    if (d < 50) {
       this.completed = true;
       this.pos = this.target.pos;
       // this.pos.x += (this.target.s2/2);
       // this.pos.y += (this.target.s1/2);
     }
-    if(this.pos.y < 0 || this.pos.x < 0 || this.pos.y > height || this.pos.x > width){
+    if(this.pos.y < 0 || this.pos.x < 0 || this.pos.y > height || this.pos.x > width/2){
       this.crashed = true;
     }
     // // Rocket hit the barrier

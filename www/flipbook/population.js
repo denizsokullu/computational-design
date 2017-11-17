@@ -7,7 +7,7 @@ function Population(target) {
   // Array of rockets
   this.rockets = [];
   // Amount of rockets
-  this.popsize = 25;
+  this.popsize = 10;
   this.target = target;
   // Amount parent rocket partners
   this.matingpool = [];

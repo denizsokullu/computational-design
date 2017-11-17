@@ -5,9 +5,9 @@
 var resultsViewed = false;
 var population1;
 // Each rocket is alive till 400 frames
-var lifespan = 1000;
+var lifespan = 1200;
 var iteration = 0;
-var totalIters = 5;
+var totalIters = 1;
 var size;
 var targets = [];
 var populations = [];
@@ -22,7 +22,7 @@ var count = 0;
 // Where rockets are trying to go
 var target1;
 var target2;
-var maxforce = .008;
+var maxforce = .01;
 
 function ShapeTargetBasic(x,y,s1,s2,shape,color){
   this.pos = {};
@@ -32,18 +32,24 @@ function ShapeTargetBasic(x,y,s1,s2,shape,color){
   this.s2 = s2;
   this.shape = shape;
   this.color = color;
-  this.draw = function(self){
+  this.draw = function(self,isReference){
     push();
     translate(self.pos.x,self.pos.y);
     rectMode(CENTER);
     ellipseMode(CENTER);
     noStroke();
     fill(self.color);
+    if(isReference){
+      extraX = width/2;
+    }
+    else{
+      extraX = 0;
+    }
     if(self.shape == "rect"){
-      rect(0,0,self.s1,self.s2);
+      rect(0+extraX,0,self.s1,self.s2);
     }
     else if(self.shape == "circle"){
-      ellipse(0,0,self.s1,self.s2);
+      ellipse(0+extraX,0,self.s1,self.s2);
     }
     pop();
   }
@@ -60,12 +66,18 @@ function ShapeTargetTriangle(x,y,color){
   this.target = this;
   this.color = color;
   this.shape = "triangle";
-  this.draw = function(self){
+  this.draw = function(self,isReference){
     xs = self.target.xs;
     ys = self.target.ys;
     cx = self.pos.x;
     cy = self.pos.y;
-    xs = xs.map((cur)=>{return cur+cx});
+    if(isReference){
+      extraX = width/2;
+    }
+    else{
+      extraX = 0;
+    }
+    xs = xs.map((cur)=>{return cur+cx+extraX});
     ys = ys.map((cur)=>{return cur+cy});
     noStroke();
     fill(self.color);
@@ -73,7 +85,7 @@ function ShapeTargetTriangle(x,y,color){
   }
 }
 function setup() {
-  createCanvas(360,360);
+  createCanvas(720,360);
   background(255);
 
   targets.push(new ShapeTargetBasic(98,180,113,225,"rect",color(0,28,119)));
@@ -181,13 +193,11 @@ function draw() {
         results.push(state);
         // rect(rx, ry, rw, rh);
         // Renders target
-        targets.map((cur)=>{
-          // cur.draw(cur);
-        })
+
       }
     }
   }
-  else if((results[results.length-1].sum / (results[results.length-1].total)) < 0.90){
+  else if((results[results.length-1].sum / (results[results.length-1].total)) < 0.95){
     totalIters++;
     console.log(totalIters);
   }
@@ -206,5 +216,11 @@ function draw() {
     }
     console.log(allResults);
     resultsViewed = !resultsViewed;
+  }
+  if(!resultsViewed){
+    targets.map((cur)=>{
+      cur.draw(cur,true);
+    })
+    text("Generation: "+iteration,20,height-20);
   }
 }
