@@ -6,6 +6,7 @@
   "scripts": {
     "compile": "webpack",
     "start": "node server.js",
+    "make-flipbook" : "node www/flipbook/generate.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

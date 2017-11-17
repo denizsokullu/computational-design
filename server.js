@@ -55,6 +55,9 @@ app.get('/generativeTypewriter/gallery',function(req,res){
 app.get('/generativeTypewriter/create',function(req,res){
   res.sendFile(__dirname + '/www/generativeTypewriter/index.html');
 })
+app.get('/flipbook/create',function(req,res){
+  res.sendFile(__dirname + '/www/flipbook/index.html');
+})
 //lead create new random post and lead them to it if create
 // Math.random().toString(36).substring(1);
 //if create/id, go to that id by retrieving it in the front end
