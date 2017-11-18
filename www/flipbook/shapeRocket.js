@@ -39,7 +39,7 @@ function Rocket(dna,target) {
     this.fitness = map(d, 0, maxDist, maxDist, 0);
     // If rocket gets to target increase fitness of rocket
     if (this.completed) {
-      this.fitness *= 200;
+      this.fitness *= 100;
     }
     // If rocket does not get to target decrease fitness
     if (this.crashed) {
@@ -61,7 +61,7 @@ function Rocket(dna,target) {
     // Checks distance from rocket to target
     var d = dist(this.pos.x, this.pos.y, this.target.pos.x, this.target.pos.y);
     // If distance less than 10 pixels, then it has reached target
-    if (d < 50) {
+    if (d < 10) {
       this.completed = true;
       this.pos = this.target.pos;
       // this.pos.x += (this.target.s2/2);

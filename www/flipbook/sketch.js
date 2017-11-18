@@ -197,7 +197,7 @@ function draw() {
       }
     }
   }
-  else if((results[results.length-1].sum / (results[results.length-1].total)) < 0.95){
+  else if((results[results.length-1].sum / (results[results.length-1].total)) < 1){
     totalIters++;
     console.log(totalIters);
   }
