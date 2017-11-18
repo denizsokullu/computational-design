@@ -1,10 +1,5 @@
-// Daniel Shiffman
-// http://codingtra.in
-// http://patreon.com/codingtrain
-// Code for: https://youtu.be/bGz7mv2vD6g
 var resultsViewed = false;
 var population1;
-// Each rocket is alive till 400 frames
 var lifespan = 1200;
 var iteration = 0;
 var totalIters = 1;
@@ -15,11 +10,7 @@ var results = [];
 var drawing = false;
 var mutating = false;
 var drawingCount = 0;
-// Made to display count on screen
-// var lifeP;
-// Keeps track of frames
 var count = 0;
-// Where rockets are trying to go
 var target1;
 var target2;
 var maxforce = .01;
@@ -129,8 +120,6 @@ function draw() {
         populations.map((cur,i)=>{
           cur.run(lifespan,count);
         })
-        // population1.run(lifespan,count,size);
-        // population2.run(lifespan,count,size);
         count++;
       }
     }
@@ -148,8 +137,6 @@ function draw() {
         if(success > 0){
           rocket.show(rocket);
         }
-        // population.evaluate();
-        // population.selection();
       });
       drawingCount ++;
       if(drawingCount == drawingLimit){
@@ -177,12 +164,6 @@ function draw() {
               curObjectArray.push(curObject);
               state.total++;
             });
-          // curObjectArray = curObjectArray.sort((a,b)=>{
-          //   if(a.fitness == b.fitness){
-          //     return 0;
-          //   }
-          //   return a.fitness > b.fitness ? 1 : -1;
-          // })
           curObjectArray = shuffle(curObjectArray);
           state.objects.push(curObjectArray);
           population.evaluate();
@@ -191,9 +172,6 @@ function draw() {
         count = 0;
         iteration ++;
         results.push(state);
-        // rect(rx, ry, rw, rh);
-        // Renders target
-
       }
     }
   }
