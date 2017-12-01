@@ -85,7 +85,7 @@ function setup() {
   )));
   targets.push(new ShapeTargetBasic(306,79,24,24,"rect",color(76,109,235)));
   targets.push(new ShapeTargetBasic(196,109,13.52,13.52,"circle",color(0,0,0)));
-  targets.push(new ShapeTargetTriangle([184,228,180],[36,69,89],color(0,28,119)));
+  // targets.push(new ShapeTargetTriangle([184,228,180],[36,69,89],color(0,28,119)));
   targets.map((cur)=>{
     populations.push(new Population(cur,cur.s1,cur.s2));
   });
@@ -147,7 +147,6 @@ function draw() {
     }
 
     // Displays count to window
-    // lifeP.html(count);
     else if (count == lifespan && mutating) {
       //go into drawing mode;
       mutating = false;
@@ -160,15 +159,26 @@ function draw() {
               if(dist(cur.pos.x,cur.pos.y,cur.target.pos.x,cur.target.pos.y)< 1){
                 state.sum++;
               }
-              curObject = {pos:cur.pos,shape:cur.shape,fitness:cur.showFitness()};
+              curObject = {x:cur.pos.x,y:cur.pos.y,shape:cur.shape};
               curObjectArray.push(curObject);
               state.total++;
-            });
+          });
           curObjectArray = shuffle(curObjectArray);
           state.objects.push(curObjectArray);
           population.evaluate();
           population.selection();
         });
+        curObjectArray = state.objects;
+        newArray = [];
+        for(var i = 0; i < curObjectArray[0].length;i++){
+          a = curObjectArray;
+          n = [];
+          for(var j = 0; j < curObjectArray.length;j++){
+            n.push(a[j][i]);
+          }
+          newArray.push(n);
+        }
+        state.objects = newArray;
         count = 0;
         iteration ++;
         results.push(state);
@@ -183,16 +193,15 @@ function draw() {
     window.alert("Got your drawing hahaah you can't stop me!");
     console.log(results);
     allResults = [];
-    for(var i = 0; i < targets.length; i++){
-      curShape = [];
-      results.map((cur)=>{
-        cur.objects[i].map((c)=>{
-          curShape.push(c);
-        })
-      });
-      allResults.push(curShape);
-    }
+    curShape = [];
+    results.map((cur)=>{
+      cur.objects.map((x)=>{
+        curShape.push(x);
+      })
+    });
+    allResults = curShape;
     console.log(allResults);
+    console.log(JSON.stringify(allResults));
     resultsViewed = !resultsViewed;
   }
   if(!resultsViewed){

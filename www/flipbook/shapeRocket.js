@@ -1,8 +1,3 @@
-// Daniel Shiffman
-// http://codingtra.in
-// http://patreon.com/codingtrain
-// Code for: https://youtu.be/bGz7mv2vD6g
-
 // Constructor function
 function Rocket(dna,target) {
   // Physics of rocket at current instance
@@ -39,7 +34,7 @@ function Rocket(dna,target) {
     this.fitness = map(d, 0, maxDist, maxDist, 0);
     // If rocket gets to target increase fitness of rocket
     if (this.completed) {
-      this.fitness *= 100;
+      this.fitness *= 200;
     }
     // If rocket does not get to target decrease fitness
     if (this.crashed) {
@@ -61,11 +56,9 @@ function Rocket(dna,target) {
     // Checks distance from rocket to target
     var d = dist(this.pos.x, this.pos.y, this.target.pos.x, this.target.pos.y);
     // If distance less than 10 pixels, then it has reached target
-    if (d < 10) {
+    if (d < 8) {
       this.completed = true;
       this.pos = this.target.pos;
-      // this.pos.x += (this.target.s2/2);
-      // this.pos.y += (this.target.s1/2);
     }
     if(this.pos.y < 0 || this.pos.x < 0 || this.pos.y > height || this.pos.x > width/2){
       this.crashed = true;

@@ -1,13 +1,8 @@
-// Daniel Shiffman
-// http://codingtra.in
-// http://patreon.com/codingtrain
-// Code for: https://youtu.be/bGz7mv2vD6g
-
 function Population(target) {
   // Array of rockets
   this.rockets = [];
   // Amount of rockets
-  this.popsize = 10;
+  this.popsize = 20;
   this.target = target;
   // Amount parent rocket partners
   this.matingpool = [];
@@ -37,7 +32,7 @@ function Population(target) {
     // Take rockets fitness make in to scale of 1 to 100
     // A rocket with high fitness will highly likely will be in the mating pool
     for (var i = 0; i < this.popsize; i++) {
-      var n = this.rockets[i].fitness * 200;
+      var n = this.rockets[i].fitness * 100;
       for (var j = 0; j < n; j++) {
         this.matingpool.push(this.rockets[i]);
       }
