@@ -1,27 +1,27 @@
 {
-  "name": "2018-theme-site",
+  "name": "computational-design",
   "version": "1.0.0",
-  "description": "Lunar Gala 2018 Theme Site",
+  "description": "Deniz's Computational Design Projects",
   "main": "index.js",
   "scripts": {
     "compile": "webpack",
     "start": "node server.js",
-    "make-flipbook" : "node www/flipbook/generate.js",
+    "make-flipbook": "node www/flipbook/generate.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lunar-gala/2018-theme-site.git"
+    "url": "git+https://github.com/denizsokullu/computational-design.git"
   },
   "keywords": [
     "LG"
   ],
-  "author": "Deniz Sokullu, Stephen Chung, Alex Yeh",
+  "author": "Deniz Sokullu",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/lunar-gala/2018-theme-site/issues"
+    "url": "https://github.com/denizsokullu/computational-design/issues"
   },
-  "homepage": "https://github.com/lunar-gala/2018-theme-site#readme",
+  "homepage": "https://github.com/denizsokullu/computational-design#readme",
   "dependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
